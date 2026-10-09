@@ -5,7 +5,7 @@ Hotel website, booking engine and admin panel for Aura Suites (Aluva, Cheranallu
 Next.js 15 (Pages Router), React 18, TypeScript, Tailwind 3, Framer Motion, lucide-react, zod 4.
 Data lives in Supabase Postgres, reached **only from the server** with the service-role key.
  
-## Setup (in this order)
+## Setup (in this order) 
 
 1. **Create a Supabase project.**
 2. **Run the migrations** in `supabase/migrations/`, in order, in the SQL editor (each is safe to run twice):
