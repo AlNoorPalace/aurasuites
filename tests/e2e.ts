@@ -38,6 +38,7 @@ try {
   await admin.getByRole('tab', { name: 'Hotels' }).click();
   await admin.getByRole('button', { name: 'Add hotel' }).click();
   await admin.fill('#h-name', 'Aura Suites Testville');
+  await admin.fill('#h-slug', 'testville');
   await admin.fill('#h-city', 'Testville');
   await admin.fill('#h-tag', 'A test stay');
   await admin.fill('#h-phone', '9995588780');
