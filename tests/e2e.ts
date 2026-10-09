@@ -26,7 +26,7 @@ try {
   web = spawn('npx', ['next', 'start', '-p', String(WEB_PORT)], { env, stdio: 'inherit' });
   await waitFor(base);
 
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
   const admin = await (await browser.newContext()).newPage();
   admin.on('dialog', (d) => d.accept());
 
