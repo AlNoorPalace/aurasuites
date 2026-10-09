@@ -82,7 +82,7 @@ test('with roles present, only service_role may execute functions', async () => 
   const db = new PGlite();
   await db.exec(`create role anon; create role authenticated; create role service_role;`);
   for (const m of migrationSql()) if (!m.file.includes('seed')) await db.exec(m.sql);
-  const q = (role: string) => db.query(`select has_function_privilege('${role}', 'create_booking(jsonb)', 'execute') as ok`);
+  const q = (role: string) => db.query<{ ok: boolean }>(`select has_function_privilege('${role}', 'create_booking(jsonb)', 'execute') as ok`);
   assert.equal((await q('service_role')).rows[0].ok, true);
   assert.equal((await q('anon')).rows[0].ok, false);
   assert.equal((await q('authenticated')).rows[0].ok, false);

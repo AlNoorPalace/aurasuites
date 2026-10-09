@@ -13,5 +13,5 @@ if (supabaseUrl) {
 module.exports = {
   reactStrictMode: true,
   poweredByHeader: false,
-  images: { remotePatterns, dangerouslyAllowLocalIP: process.env.NODE_ENV !== 'production' },
+  images: { remotePatterns },
 };
