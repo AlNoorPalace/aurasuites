@@ -66,3 +66,10 @@ test('schemas return field-level messages', () => {
   assert.ok(!roomSaveSchema.safeParse({ description: 'x'.repeat(601) }).success);
   assert.ok(!roomSaveSchema.safeParse({ images: new Array(9).fill('/img/a.jpg') }).success);
 });
+
+test('setup hints for common Supabase mistakes', async () => {
+  const { setupHint } = await import('../lib/supabase');
+  assert.match(setupHint('PGRST202', 'Could not find the function public.admin_list_hotels')!, /migrations/);
+  assert.match(setupHint(undefined, 'Invalid API key')!, /SERVICE_ROLE_KEY/);
+  assert.equal(setupHint(undefined, 'something else'), undefined);
+});

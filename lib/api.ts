@@ -29,7 +29,10 @@ export function route(methods: string[], handler: Handler, opts: { admin?: boole
       await handler(req, res);
     } catch (e) {
       console.error('api error:', req.url, e instanceof DbError ? e.message : e);
-      if (!res.headersSent) res.status(e instanceof DbError ? 503 : 500).json({ error: e instanceof DbError ? 'unavailable' : 'server_error' });
+      if (!res.headersSent) {
+        const hint = e instanceof DbError && opts.admin ? e.hint : undefined; // setup hints are for the admin only
+        res.status(e instanceof DbError ? 503 : 500).json({ error: e instanceof DbError ? 'unavailable' : 'server_error', ...(hint ? { message: hint } : {}) });
+      }
     }
   };
 }
