@@ -36,8 +36,9 @@ export default function Hotels({ ctx, onChanged }: { ctx: AdminCtx; onChanged: (
     if (r.error) setMsg(r.error); else { load(); onChanged(); }
   };
   const del = async (h: AdminHotel) => {
-    if (!confirm(`Delete ${h.name}? This cannot be undone.`)) return;
-    const r = await adm(ctx, '/api/admin/hotels', 'DELETE', { slug: h.slug });
+    const warn = h.has_bookings ? `\n\n${h.name} has bookings. They will be permanently deleted too.` : '';
+    if (!confirm(`Delete ${h.name}? This cannot be undone.${warn}`)) return;
+    const r = await adm(ctx, '/api/admin/hotels', 'DELETE', { slug: h.slug, force: h.has_bookings || undefined });
     if (r.error) return setMsg(r.error);
     await deleteFiles(ctx, h.images);
     load(); onChanged();

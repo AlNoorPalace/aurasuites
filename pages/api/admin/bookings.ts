@@ -1,5 +1,5 @@
 import { route, parse, sendResult } from '../../../lib/api';
-import { adminAdvanceSchema, adminBookingsQuery, adminCancelSchema } from '../../../lib/schemas';
+import { adminAdvanceSchema, adminBookingsQuery, adminCancelSchema, deleteBookingSchema } from '../../../lib/schemas';
 import { rpc } from '../../../lib/supabase';
 
 export default route(['GET', 'POST'], async (req, res) => {
@@ -12,6 +12,11 @@ export default route(['GET', 'POST'], async (req, res) => {
     const a = parse(adminAdvanceSchema, req.body, res);
     if (!a) return;
     return sendResult(res, await rpc('admin_record_advance', { reference: a.reference, amount: a.advance }));
+  }
+  if (req.body && typeof req.body === 'object' && 'delete' in req.body) {
+    const d = parse(deleteBookingSchema, req.body, res);
+    if (!d) return;
+    return sendResult(res, await rpc('admin_delete_booking', { reference: d.reference }));
   }
   const p = parse(adminCancelSchema, req.body, res);
   if (!p) return;

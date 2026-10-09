@@ -23,6 +23,8 @@ test('hotel CRUD, slug rules, hide/show, and "has bookings" delete rule', async 
   assert.equal((await rpc('admin_delete_room_type', { id })).error, 'has_bookings');
   await rpc('admin_save_hotel', { slug: 'empty', name: 'Empty', create: true });
   assert.ok((await rpc('admin_delete_hotel', { slug: 'empty' })).ok);
+  assert.ok((await rpc('admin_delete_hotel', { slug: 'aluva', force: true })).ok); // removes its bookings too
+  assert.equal((await rpc('admin_delete_booking', { reference: booking.reference })).error, 'not_found');
 });
 
 test('rooms: unique names, inline edit, bookable toggle', async () => {
@@ -109,4 +111,16 @@ test('advance payments: recorded by admin, capped at the total, shown to guest',
   const l = await rpc('admin_list_bookings', {});
   assert.equal(l.summary.advance, 700);
   assert.equal(l.bookings[0].advance_paid, 700);
+});
+
+test('admin can delete a booking and save site photos', async () => {
+  const { rpc } = await newDb();
+  const id = await setup(rpc);
+  const { booking } = await rpc('create_booking', bk(id));
+  assert.ok((await rpc('admin_delete_booking', { reference: booking.reference })).ok);
+  assert.equal((await rpc('admin_delete_booking', { reference: booking.reference })).error, 'not_found');
+  assert.deepEqual(await rpc('site_photos'), {});
+  await rpc('admin_save_site_photos', { hero: [{ src: '/img/a.jpg', alt: 'A' }], gallery: [] });
+  assert.equal((await rpc('site_photos')).hero[0].src, '/img/a.jpg');
+  assert.equal((await rpc('admin_image_in_use', { url: '/img/a.jpg' })).in_use, true);
 });

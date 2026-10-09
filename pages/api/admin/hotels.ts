@@ -1,5 +1,5 @@
 import { route, parse, sendResult } from '../../../lib/api';
-import { hotelSaveSchema, slugSchema } from '../../../lib/schemas';
+import { hotelSaveSchema, hotelDeleteSchema } from '../../../lib/schemas';
 import { rpc } from '../../../lib/supabase';
 import { isAllowedPhotoUrl } from '../../../lib/images';
 import { revalidateSite } from '../../../lib/revalidate';
@@ -7,7 +7,7 @@ import { revalidateSite } from '../../../lib/revalidate';
 export default route(['GET', 'POST', 'DELETE'], async (req, res) => {
   if (req.method === 'GET') return sendResult(res, await rpc('admin_list_hotels'));
   if (req.method === 'DELETE') {
-    const p = parse(slugSchema, req.body, res);
+    const p = parse(hotelDeleteSchema, req.body, res);
     if (!p) return;
     const r = await rpc('admin_delete_hotel', p);
     if (!r.error) await revalidateSite(res, [p.slug]);
