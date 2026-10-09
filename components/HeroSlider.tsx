@@ -8,8 +8,7 @@ const SLIDE_MS = 5500;
 const GRADIENTS = ['from-[#1b2b34] to-[#0c151a]', 'from-[#2a3a42] to-[#10191e]', 'from-[#22343c] to-[#0e171c]'];
 const WORDS = [['Arrive.'], ['Unwind.'], ['Feel', 'at', 'home.']];
 
-export default function HeroSlider() {
-  const slides = PHOTOS.hero;
+export default function HeroSlider({ slides = PHOTOS.hero }: { slides?: { src: string; alt: string }[] }) {
   const reduce = useReducedMotion();
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);

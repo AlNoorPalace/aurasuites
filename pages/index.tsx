@@ -7,25 +7,23 @@ import HotelCard from '../components/HotelCard';
 import RoomCard from '../components/RoomCard';
 import GallerySection, { type GalleryItem } from '../components/GallerySection';
 import Reveal from '../components/Reveal';
-import { PHOTOS } from '../data/photos';
 import { CONTACT } from '../data/hotels';
-import { loadHotels } from '../lib/data';
+import { loadHotels, loadSitePhotos, type SitePhotos } from '../lib/data';
 import { groupRooms, type Hotel } from '../lib/rooms';
 
 export const getStaticProps: GetStaticProps = async () => {
   const { hotels, live } = await loadHotels();
-  return { props: { hotels, live }, revalidate: 300 };
+  const photos = await loadSitePhotos();
+  return { props: { hotels, live, photos }, revalidate: 300 };
 };
 
-export default function Home({ hotels, live }: { hotels: Hotel[]; live: boolean }) {
+export default function Home({ hotels, live, photos }: { hotels: Hotel[]; live: boolean; photos: SitePhotos }) {
   const rooms = groupRooms(hotels);
-  // Photos uploaded in /admin come first; the configured defaults fill the remaining gallery slots.
-  const uploaded = Array.from(new Set([...hotels.flatMap((h) => h.images), ...hotels.flatMap((h) => h.rooms.flatMap((r) => r.images))]));
-  const gallery: GalleryItem[] = PHOTOS.gallery.map((g, i) => ({ caption: g.caption, src: uploaded[i] || g.src }));
+  const gallery: GalleryItem[] = photos.gallery;
   return (
     <Layout>
       <div className="relative">
-        <HeroSlider />
+        <HeroSlider slides={photos.hero} />
         <div className="absolute inset-x-0 bottom-0 z-30 translate-y-1/2 px-5">
           <div className="mx-auto max-w-5xl">
             {live ? <SearchBar hotels={hotels} /> : (

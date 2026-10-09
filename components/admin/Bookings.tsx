@@ -21,6 +21,11 @@ export default function Bookings({ ctx, hotels }: { ctx: AdminCtx; hotels: { slu
     const r = await adm(ctx, '/api/admin/bookings', 'POST', { reference: ref });
     if (r.error) setErr(r.error); else load();
   };
+  const remove = async (ref: string) => {
+    if (!confirm(`Permanently delete booking ${ref}? This cannot be undone.`)) return;
+    const r = await adm(ctx, '/api/admin/bookings', 'POST', { reference: ref, delete: true });
+    if (r.error) setErr(r.error); else load();
+  };
   const advance = async (b: Row) => {
     const v = prompt(`Total advance received for ${b.reference} (₹, booking total ${rupees(b.total)}):`, String(b.advance_paid));
     if (v === null) return;
@@ -51,7 +56,7 @@ export default function Bookings({ ctx, hotels }: { ctx: AdminCtx; hotels: { slu
                 <td>{rupees(b.total)}</td>
                 <td>{b.status === 'confirmed' ? <button className="underline" onClick={() => advance(b)} title="Record advance received">{b.advance_paid > 0 ? rupees(b.advance_paid) : 'Record'}</button> : '—'}</td>
                 <td className={b.status === 'cancelled' ? 'text-red-700' : 'text-green-800'}>{b.status}</td>
-                <td>{b.status === 'confirmed' && <button className="text-xs text-red-700 underline" onClick={() => cancel(b.reference)}>Cancel</button>}</td>
+                <td className="whitespace-nowrap text-xs">{b.status === 'confirmed' && <button className="text-red-700 underline" onClick={() => cancel(b.reference)}>Cancel</button>} <button className="ml-2 text-red-700 underline" onClick={() => remove(b.reference)}>Delete</button></td>
               </tr>
             ))}
             {rows.length === 0 && <tr><td colSpan={8} className="py-6 text-center text-ink/50">No bookings found.</td></tr>}

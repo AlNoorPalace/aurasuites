@@ -7,6 +7,7 @@ import { api, friendly } from '../../lib/client';
 import Bookings from '../../components/admin/Bookings';
 import Hotels, { type AdminHotel } from '../../components/admin/Hotels';
 import Rooms from '../../components/admin/Rooms';
+import SitePhotos from '../../components/admin/SitePhotos';
 import Availability from '../../components/admin/Availability';
 import { adm } from '../../components/admin/common';
 
@@ -16,7 +17,7 @@ export const getStaticProps: GetStaticProps = async () => {
   return { props: { bundled } };
 };
 
-const TABS = ['Bookings', 'Hotels', 'Rooms & rates', 'Availability'] as const;
+const TABS = ['Bookings', 'Hotels', 'Rooms & rates', 'Availability', 'Site photos'] as const;
 
 export default function Admin({ bundled }: { bundled: string[] }) {
   const [auth, setAuth] = useState<'loading' | 'out' | 'in'>('loading');
@@ -65,6 +66,7 @@ export default function Admin({ bundled }: { bundled: string[] }) {
             {tab === 'Bookings' && <Bookings ctx={ctx} hotels={hotels} />}
             {tab === 'Hotels' && <Hotels ctx={ctx} onChanged={loadHotels} />}
             {tab === 'Rooms & rates' && <Rooms ctx={ctx} hotels={hotels} onChanged={loadHotels} />}
+            {tab === 'Site photos' && <SitePhotos ctx={ctx} />}
             {tab === 'Availability' && <Availability ctx={ctx} hotels={hotels} />}
           </div>
         </div>

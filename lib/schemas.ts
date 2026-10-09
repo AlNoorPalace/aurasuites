@@ -85,6 +85,12 @@ export const roomSaveSchema = z.object({
 
 export const idSchema = z.object({ id: z.coerce.number().int().positive() });
 export const slugSchema = z.object({ slug });
+export const hotelDeleteSchema = z.object({ slug, force: z.boolean().optional() });
+export const deleteBookingSchema = z.object({ reference: z.string().min(4).max(20), delete: z.literal(true) });
+export const sitePhotosSchema = z.object({
+  hero: z.array(z.object({ src: z.string().max(500), alt: z.string().max(120) })).max(8),
+  gallery: z.array(z.object({ src: z.string().max(500), caption: z.string().max(120) })).max(18),
+});
 export const calendarQuery = z.object({ room_type_id: z.coerce.number().int().positive(), month: z.string().regex(/^\d{4}-\d{2}$/).optional() });
 export const blockSchema = z.object({
   room_type_id: z.coerce.number().int().positive(),
