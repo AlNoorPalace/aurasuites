@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const supabaseUrl = process.env.SUPABASE_URL;
-let remotePatterns = [];
+let remotePatterns = [{ protocol: 'https', hostname: 'images.unsplash.com' }];
 if (supabaseUrl) {
   const u = new URL(supabaseUrl);
   remotePatterns.push({

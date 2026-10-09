@@ -28,7 +28,7 @@ try {
 
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
   const admin = await (await browser.newContext()).newPage();
-  admin.on('dialog', (d) => d.accept());
+  admin.on('dialog', (d) => d.accept(d.type() === 'prompt' ? '700' : undefined));
 
   // ---- admin: sign in, add hotel
   await admin.goto(`${base}/admin`);
@@ -87,7 +87,15 @@ try {
   await guest.getByRole('button', { name: 'Confirm booking' }).click();
   const ref = await guest.locator('[data-testid=reference]').innerText();
   assert.match(ref, /^AUR-[0-9A-F]{6}$/);
-  await guest.locator('[data-testid=upi-card] img[alt="UPI payment QR code"]').waitFor();
+  // advance payment: below the minimum shows an error and no QR; a valid amount makes a QR for exactly that amount
+  await guest.fill('#advance', '499');
+  await guest.getByText('The minimum advance is ₹500.').waitFor();
+  assert.equal(await guest.locator('[data-testid=upi-qr]').count(), 0);
+  await guest.fill('#advance', '700');
+  await guest.locator('[data-testid=upi-qr]').waitFor();
+  assert.equal((await guest.locator('[data-testid=upi-amount]').innerText()).trim(), '₹700');
+  await guest.fill('#advance', '9999999');
+  await guest.getByText('The most you can pay is').waitFor();
   assert.ok((await guest.locator('[data-testid=upi-card]').innerText()).includes('cannot verify'));
 
   // ---- manage booking, then admin sees it
@@ -97,6 +105,24 @@ try {
   await guest.locator('[data-testid=booking]').waitFor();
   await admin.getByRole('tab', { name: 'Bookings' }).click();
   await admin.getByText(ref).waitFor();
+  await admin.getByRole('button', { name: 'Record' }).click(); // prompt answers 700
+  await admin.getByRole('button', { name: '₹700' }).waitFor();
+  await guest.goto(`${base}/manage-booking`);
+  await guest.fill('#m-ref', ref); await guest.fill('#m-phone', '9876543210');
+  await guest.getByRole('button', { name: 'Find booking' }).click();
+  await guest.getByText('advance received ₹700').waitFor();
+
+  // ---- home page: hero slider controls and gallery lightbox
+  await guest.goto(`${base}/`);
+  await guest.getByRole('button', { name: 'Next slide' }).click();
+  await guest.getByTestId('slide-count').getByText('02 / 03').waitFor();
+  await guest.locator('[data-testid=gallery-tile]').first().click();
+  await guest.getByTestId('lightbox').waitFor();
+  await guest.keyboard.press('ArrowRight');
+  await guest.getByText('2 / 6').waitFor();
+  await guest.keyboard.press('Escape');
+  await guest.getByTestId('lightbox').waitFor({ state: 'detached' });
+  assert.equal(await guest.getByText(/enquir/i).count(), 0, 'no enquiry form on the home page');
 
   // ---- fallback: database down => site still renders with the built-in list
   await dev.server.close(); dev.server.closeAllConnections?.();

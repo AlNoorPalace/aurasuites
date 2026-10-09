@@ -3,8 +3,10 @@ module.exports = {
   content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   theme: {
     extend: {
-      colors: { ink: '#0b0b0c', gold: { DEFAULT: '#c9a24a', light: '#f8c120', dark: '#9a7623' }, ivory: '#faf8f3' },
-      fontFamily: { serif: ['"EB Garamond"', 'Georgia', 'serif'], sans: ['Inter', 'system-ui', 'sans-serif'] },
+      colors: { ink: '#131f26', gold: { DEFAULT: '#c9a96a', light: '#e3cb9c', dark: '#8a6d3b' }, ivory: '#f8f8f4', mist: '#eceeea' },
+      fontFamily: { serif: ['"Playfair Display"', 'Georgia', 'serif'], sans: ['"DM Sans"', 'system-ui', 'sans-serif'] },
+      keyframes: { kenburns: { '0%': { transform: 'scale(1)' }, '100%': { transform: 'scale(1.08)' } } },
+      animation: { kenburns: 'kenburns 9s ease-out forwards' },
     },
   },
   plugins: [],
