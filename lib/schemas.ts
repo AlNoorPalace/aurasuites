@@ -49,6 +49,7 @@ export const adminBookingsQuery = z.object({
   to: date.optional().or(z.literal('')),
 });
 export const adminCancelSchema = z.object({ reference: z.string().min(4).max(20) });
+export const adminAdvanceSchema = z.object({ reference: z.string().min(4).max(20), advance: z.coerce.number().int().min(0, 'Enter an amount of 0 or more').max(1_000_000) });
 
 const photoUrl = z.string().max(500);
 export const hotelSaveSchema = z.object({

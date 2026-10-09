@@ -29,13 +29,16 @@ export function route(methods: string[], handler: Handler, opts: { admin?: boole
       await handler(req, res);
     } catch (e) {
       console.error('api error:', req.url, e instanceof DbError ? e.message : e);
-      if (!res.headersSent) res.status(e instanceof DbError ? 503 : 500).json({ error: e instanceof DbError ? 'unavailable' : 'server_error' });
+      if (!res.headersSent) {
+        const hint = e instanceof DbError && opts.admin ? e.hint : undefined; // setup hints are for the admin only
+        res.status(e instanceof DbError ? 503 : 500).json({ error: e instanceof DbError ? 'unavailable' : 'server_error', ...(hint ? { message: hint } : {}) });
+      }
     }
   };
 }
 
 const STATUS: Record<string, number> = {
-  not_found: 404, sold_out: 409, slug_taken: 409, name_taken: 409, has_bookings: 409, already_cancelled: 409, too_late: 409,
+  not_found: 404, sold_out: 409, slug_taken: 409, name_taken: 409, has_bookings: 409, already_cancelled: 409, too_late: 409, invalid_amount: 400,
 };
 /** Sends a SQL function result: error codes become 4xx, success is passed through. */
 export function sendResult(res: NextApiResponse, r: any) {

@@ -114,7 +114,7 @@ export default function BookingModal({ hotelSlug, hotelName, onClose, initialRoo
             <p className="font-serif text-4xl tracking-wider" data-testid="reference">{done.reference}</p>
             <p className="mt-2 text-sm text-ink/70">{done.room_name} · {prettyDate(done.check_in)} → {prettyDate(done.check_out)} · {rupees(done.total)} to pay at the hotel</p>
             <p className="mt-1 text-xs text-ink/50">Keep this reference and your phone number to view or cancel the booking at Manage booking.</p>
-            <UpiCard reference={done.reference} total={done.total} />
+            <UpiCard reference={done.reference} total={done.total} paid={0} />
             <button className="btn btn-dark mt-6" onClick={onClose}>Done</button>
           </div>
         )}

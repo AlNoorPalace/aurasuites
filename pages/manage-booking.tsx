@@ -11,7 +11,7 @@ export const getStaticProps: GetStaticProps = async () => {
   return { props: { live }, revalidate: 300 };
 };
 
-type B = { reference: string; hotel_name: string; room_name: string; check_in: string; check_out: string; nights: number; rooms: number; adults: number; children: number; total: number; discount: number; status: string; guest_name: string };
+type B = { reference: string; hotel_name: string; room_name: string; check_in: string; check_out: string; nights: number; rooms: number; adults: number; children: number; total: number; advance_paid: number; discount: number; status: string; guest_name: string };
 
 export default function ManageBooking({ live }: { live: boolean }) {
   const [f, setF] = useState({ reference: '', phone: '' });
@@ -57,10 +57,10 @@ export default function ManageBooking({ live }: { live: boolean }) {
               <div>{b.hotel_name} · {b.room_name} × {b.rooms}</div>
               <div>{prettyDate(b.check_in)} → {prettyDate(b.check_out)} ({b.nights} night{b.nights > 1 ? 's' : ''})</div>
               <div>{b.adults + b.children} guest{b.adults + b.children > 1 ? 's' : ''} · {b.guest_name}</div>
-              <div>Total {rupees(b.total)}{b.discount > 0 ? ` (includes corporate discount ${rupees(b.discount)})` : ''} · pay at the hotel</div>
+              <div>Total {rupees(b.total)}{b.discount > 0 ? ` (includes corporate discount ${rupees(b.discount)})` : ''} · {b.advance_paid > 0 ? `advance received ${rupees(b.advance_paid)}, balance ${rupees(b.total - b.advance_paid)} at the hotel` : 'pay at the hotel'}</div>
             </dl>
             {msg && <p className="err mt-3">{msg}</p>}
-            {upcoming && <><UpiCard reference={b.reference} total={b.total} /><button className="btn btn-ghost mt-5" onClick={cancel} disabled={busy}>Cancel booking</button></>}
+            {upcoming && <><UpiCard reference={b.reference} total={b.total} paid={b.advance_paid} /><button className="btn btn-ghost mt-5" onClick={cancel} disabled={busy}>Cancel booking</button></>}
           </div>
         )}
       </section>

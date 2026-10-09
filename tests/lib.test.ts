@@ -66,3 +66,19 @@ test('schemas return field-level messages', () => {
   assert.ok(!roomSaveSchema.safeParse({ description: 'x'.repeat(601) }).success);
   assert.ok(!roomSaveSchema.safeParse({ images: new Array(9).fill('/img/a.jpg') }).success);
 });
+
+test('setup hints for common Supabase mistakes', async () => {
+  const { setupHint } = await import('../lib/supabase');
+  assert.match(setupHint('PGRST202', 'Could not find the function public.admin_list_hotels')!, /migrations/);
+  assert.match(setupHint(undefined, 'Invalid API key')!, /SERVICE_ROLE_KEY/);
+  assert.equal(setupHint(undefined, 'something else'), undefined);
+});
+
+test('advance bounds: min ₹500 (or the balance if smaller), max the balance', async () => {
+  const { advanceBounds, validAdvance } = await import('../lib/upi');
+  assert.deepEqual(advanceBounds(6000), { min: 500, max: 6000 });
+  assert.deepEqual(advanceBounds(300), { min: 300, max: 300 });
+  assert.deepEqual(advanceBounds(0), { min: 0, max: 0 });
+  assert.ok(validAdvance(500, 6000) && validAdvance(6000, 6000) && validAdvance(300, 300));
+  for (const [a, t] of [[499, 6000], [6001, 6000], [500.5, 6000], [NaN, 6000], [500, 0], [-5, 6000]] as const) assert.equal(validAdvance(a, t), false, `${a}/${t}`);
+});

@@ -94,3 +94,19 @@ test('seed migration runs twice without duplicating', async () => {
   assert.equal(h.length, 3);
   assert.equal(h[0].rooms.length, 1);
 });
+
+test('advance payments: recorded by admin, capped at the total, shown to guest', async () => {
+  const { rpc } = await newDb();
+  const id = await setup(rpc);
+  const { booking } = await rpc('create_booking', bk(id));
+  assert.equal(booking.advance_paid, 0);
+  assert.equal((await rpc('admin_record_advance', { reference: booking.reference, amount: 3001 })).error, 'invalid_amount');
+  assert.equal((await rpc('admin_record_advance', { reference: booking.reference, amount: -1 })).error, 'invalid_amount');
+  assert.equal((await rpc('admin_record_advance', { reference: 'AUR-NOPE00', amount: 500 })).error, 'not_found');
+  const ok = await rpc('admin_record_advance', { reference: booking.reference, amount: 700 });
+  assert.equal(ok.booking.advance_paid, 700);
+  assert.equal((await rpc('get_booking', { reference: booking.reference, phone: '9995588780' })).booking.advance_paid, 700);
+  const l = await rpc('admin_list_bookings', {});
+  assert.equal(l.summary.advance, 700);
+  assert.equal(l.bookings[0].advance_paid, 700);
+});

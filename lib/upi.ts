@@ -17,3 +17,16 @@ export function buildUpiLink(opts: { id: string; name: string; amount: number; r
   const enc = encodeURIComponent;
   return `upi://pay?pa=${enc(id)}&pn=${enc(cleanName)}&am=${amount.toFixed(2)}&cu=INR&tn=${enc(`Booking ${ref}`)}`;
 }
+
+export const MIN_ADVANCE = 500;
+
+/** Advance must be at least ₹500 (or the whole balance if that is smaller) and no more than the balance. */
+export function advanceBounds(balance: number): { min: number; max: number } {
+  const max = Math.max(0, Math.floor(balance));
+  return { min: Math.min(MIN_ADVANCE, max), max };
+}
+
+export function validAdvance(amount: number, balance: number): boolean {
+  const { min, max } = advanceBounds(balance);
+  return Number.isFinite(amount) && Number.isInteger(amount) && max > 0 && amount >= min && amount <= max;
+}
