@@ -14,6 +14,7 @@ export default function HeroSlider() {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [failed, setFailed] = useState<Record<number, boolean>>({});
   const touch = useRef<number | null>(null);
   const go = useCallback((n: number) => setI((p) => (p + n + slides.length) % slides.length), [slides.length]);
 
@@ -41,7 +42,7 @@ export default function HeroSlider() {
       <AnimatePresence initial={false}>
         <motion.div key={i} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.2 }} aria-roledescription="slide" aria-label={`${i + 1} of ${slides.length}`}>
           <div className={`absolute inset-0 bg-gradient-to-br ${GRADIENTS[i % GRADIENTS.length]}`} />
-          {slides[i].src && <Image src={slides[i].src} alt={slides[i].alt} fill priority={i === 0} sizes="100vw" className={`object-cover ${reduce ? '' : 'animate-kenburns'}`} />}
+          {slides[i].src && !failed[i] && <Image src={slides[i].src} alt={slides[i].alt} fill priority={i === 0} sizes="100vw" onError={() => setFailed((p) => ({ ...p, [i]: true }))} className={`object-cover ${reduce ? '' : 'animate-kenburns'}`} />}
           <div className="absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/40 to-ink/10" />
         </motion.div>
       </AnimatePresence>
