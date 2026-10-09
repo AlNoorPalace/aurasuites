@@ -4,6 +4,13 @@ import { deleteUploadSchema, uploadSchema } from '../../../lib/schemas';
 import { rpc, supabase } from '../../../lib/supabase';
 import { BUCKET, MAX_UPLOAD_BYTES, bucketPrefix, sniffImage } from '../../../lib/images';
 
+function uploadHint(msg: string): string {
+  if (/bucket not found/i.test(msg)) return `The "${BUCKET}" storage bucket does not exist. Run supabase/migrations/007_storage_bucket.sql in the Supabase SQL editor (or create a public bucket named ${BUCKET}), then try again.`;
+  if (/row-level security|unauthorized|invalid (jwt|api key)|signature/i.test(msg)) return 'Supabase rejected the upload. Check that SUPABASE_SERVICE_ROLE_KEY is the service_role key.';
+  if (/fetch failed|ENOTFOUND|ECONNREFUSED/i.test(msg)) return 'The server could not reach Supabase Storage. Check SUPABASE_URL.';
+  return `Upload failed. Check that the "${BUCKET}" storage bucket exists and is public, and that the service-role key is correct.`;
+}
+
 export const config = { api: { bodyParser: { sizeLimit: '6mb' } } };
 
 export default route(['POST', 'DELETE'], async (req, res) => {
@@ -18,7 +25,7 @@ export default route(['POST', 'DELETE'], async (req, res) => {
     const { error } = await supabase().storage.from(BUCKET).upload(name, buf, { contentType: kind.type, upsert: false });
     if (error) {
       console.error('upload failed:', error.message);
-      return res.status(502).json({ error: 'upload_failed', message: `Upload failed. Check that the "${BUCKET}" storage bucket exists and is public, and that the service-role key is correct.` });
+      return res.status(502).json({ error: 'upload_failed', message: uploadHint(error.message) });
     }
     return res.status(200).json({ url: `${bucketPrefix()}${name}` });
   }

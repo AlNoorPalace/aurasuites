@@ -9,9 +9,8 @@ Data lives in Supabase Postgres, reached **only from the server** with the servi
 
 1. **Create a Supabase project.**
 2. **Run the migrations** in `supabase/migrations/`, in order, in the SQL editor (each is safe to run twice):
-   `001_schema.sql`, `002_booking_functions.sql`, `003_admin_functions.sql`, `004_security.sql`, then optionally `005_seed.sql`
-   (starter hotels and one placeholder room per hotel).
-3. **Create a storage bucket** named `hotel-images` and make it **public**.
+   `001_schema.sql` to `007_storage_bucket.sql` (`005_seed.sql` is optional starter data; `007` creates the public `hotel-images` photo bucket).
+3. **Check Storage** shows a public bucket named `hotel-images` (migration 007 creates it; you can also create it by hand).
 4. **Set the environment variables** (copy `.env.example`). `ADMIN_SESSION_SECRET` must be at least 32 random characters.
 5. **Deploy / redeploy.** `SUPABASE_URL` is also read at build time for `next.config.js` image settings, so redeploy after setting it.
 6. **Open `/admin`**, sign in, and set the real room counts and rates under *Rooms & rates* (the seed values are placeholders).
