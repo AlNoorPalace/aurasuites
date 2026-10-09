@@ -1,0 +1,24 @@
+@import '@fontsource/eb-garamond/400.css';
+@import '@fontsource/eb-garamond/500.css';
+@import '@fontsource/eb-garamond/600.css';
+@import '@fontsource/inter/300.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+body { @apply bg-white font-sans font-light text-ink antialiased; }
+h1, h2, h3, h4 { @apply font-serif font-medium; }
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 bg-gold px-6 py-3 text-xs font-medium uppercase tracking-widest text-ink transition hover:bg-ink hover:text-gold disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-dark { @apply bg-ink text-gold hover:bg-gold hover:text-ink; }
+  .btn-ghost { @apply border border-ink/20 bg-transparent text-ink hover:border-ink hover:bg-transparent hover:text-ink; }
+  .eyebrow { @apply text-xs uppercase tracking-[0.22em] text-gold-dark; }
+  .input { @apply w-full border border-ink/20 bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-gold; }
+  .label { @apply mb-1 block text-xs uppercase tracking-wider text-ink/60; }
+  .err { @apply mt-1 text-xs text-red-700; }
+  .section { @apply mx-auto w-full max-w-6xl px-5 py-16 md:py-24; }
+}
+.rdp-day { cursor: pointer; }
